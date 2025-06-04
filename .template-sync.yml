@@ -28,6 +28,8 @@ merge:
   - docker-compose.yml
   - Dockerfile
   - .env.example
+  - .air.toml.example
+  - .goreleaser.yml.example
 
 # Files that should be synced only if they don't exist locally
 create_if_missing:

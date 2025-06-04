@@ -1,0 +1,88 @@
+# GoReleaser configuration
+# Copy to .goreleaser.yml and customize as needed
+# Documentation: https://goreleaser.com
+
+before:
+  hooks:
+    - go mod tidy
+    - go generate ./...
+
+builds:
+  - id: api
+    main: ./cmd/api
+    binary: '{{ .ProjectName }}'
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+      - arm
+    goarm:
+      - "7"
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+      - -X main.commit={{.Commit}}
+      - -X main.date={{.Date}}
+      - -X main.builtBy=goreleaser
+
+archives:
+  - id: default
+    name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - README.md
+      - LICENSE
+      - docs/*
+
+checksum:
+  name_template: 'checksums.txt'
+
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+      - '^chore:'
+  groups:
+    - title: 'Features'
+      regexp: '^feat'
+    - title: 'Bug Fixes'
+      regexp: '^fix'
+    - title: 'Performance'
+      regexp: '^perf'
+    - title: 'Refactoring'
+      regexp: '^refactor'
+
+dockers:
+  - id: api
+    image_templates:
+      - '{{ .Env.REGISTRY }}/{{ .ProjectName }}:{{ .Tag }}'
+      - '{{ .Env.REGISTRY }}/{{ .ProjectName }}:latest'
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+    dockerfile: Dockerfile
+
+release:
+  github:
+    owner: '{{ .Env.GITHUB_OWNER }}'
+    name: '{{ .ProjectName }}'
+  draft: false
+  prerelease: auto
+  name_template: "{{.ProjectName}} v{{.Version}}"
+  disable: false

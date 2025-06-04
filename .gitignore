@@ -49,9 +49,11 @@ temp/
 *.tmp
 
 # Air - Live reload for Go apps
+# Use .air.toml.example as template
 .air.toml
 
 # GoReleaser
+# Use .goreleaser.yml.example as template
 .goreleaser.yml
 dist/
 

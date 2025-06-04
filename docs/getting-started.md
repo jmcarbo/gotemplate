@@ -92,7 +92,16 @@ make install-tools
    # Edit .env with your configuration
    ```
 
-2. **Set up your database** (if needed):
+2. **Set up development tools** (optional):
+   ```bash
+   # For hot reload development
+   cp .air.toml.example .air.toml
+   
+   # For releases with GoReleaser
+   cp .goreleaser.yml.example .goreleaser.yml
+   ```
+
+3. **Set up your database** (if needed):
    ```bash
    # Start PostgreSQL with docker-compose
    docker-compose up -d postgres
