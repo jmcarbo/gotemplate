@@ -4,7 +4,7 @@ run:
   tests: true
   build-tags:
     - integration
-  skip-dirs:
+  exclude-dirs:
     - vendor
     - .git
     - .github
@@ -36,7 +36,8 @@ linters-settings:
     check-type-assertions: true
     check-blank: true
   govet:
-    check-shadowing: true
+    enable:
+      - shadow
   gofmt:
     simplify: true
   goimports:
