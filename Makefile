@@ -237,17 +237,34 @@ setup-project: ## Setup project from template (usage: make setup-project PROJECT
 	@go mod edit -module $(MODULE_PATH)
 	
 	@echo '${GREEN}Updating imports...${RESET}'
-	@find . -type f -name "*.go" -exec sed -i '' 's|gotemplaterepo|$(MODULE_PATH)|g' {} +
+	@if [[ "$$(uname)" == "Darwin" ]]; then \
+		find . -type f -name "*.go" -exec sed -i '' 's|gotemplaterepo|$(MODULE_PATH)|g' {} +; \
+	else \
+		find . -type f -name "*.go" -exec sed -i 's|gotemplaterepo|$(MODULE_PATH)|g' {} +; \
+	fi
 	
 	@echo '${GREEN}Updating Makefile...${RESET}'
-	@sed -i '' 's/BINARY_NAME=gotemplate/BINARY_NAME=$(PROJECT_NAME)/g' Makefile
-	@sed -i '' 's/DOCKER_IMAGE=gotemplate/DOCKER_IMAGE=$(PROJECT_NAME)/g' Makefile
+	@if [[ "$$(uname)" == "Darwin" ]]; then \
+		sed -i '' 's/BINARY_NAME=gotemplate/BINARY_NAME=$(PROJECT_NAME)/g' Makefile; \
+		sed -i '' 's/DOCKER_IMAGE=gotemplate/DOCKER_IMAGE=$(PROJECT_NAME)/g' Makefile; \
+	else \
+		sed -i 's/BINARY_NAME=gotemplate/BINARY_NAME=$(PROJECT_NAME)/g' Makefile; \
+		sed -i 's/DOCKER_IMAGE=gotemplate/DOCKER_IMAGE=$(PROJECT_NAME)/g' Makefile; \
+	fi
 	
 	@echo '${GREEN}Updating docker-compose.yml...${RESET}'
-	@sed -i '' 's/gotemplate/$(PROJECT_NAME)/g' docker-compose.yml
+	@if [[ "$$(uname)" == "Darwin" ]]; then \
+		sed -i '' 's/gotemplate/$(PROJECT_NAME)/g' docker-compose.yml; \
+	else \
+		sed -i 's/gotemplate/$(PROJECT_NAME)/g' docker-compose.yml; \
+	fi
 	
 	@echo '${GREEN}Updating CLAUDE.md...${RESET}'
-	@sed -i '' 's/Go Template/$(PROJECT_NAME)/g' CLAUDE.md
+	@if [[ "$$(uname)" == "Darwin" ]]; then \
+		sed -i '' 's/Go Template/$(PROJECT_NAME)/g' CLAUDE.md; \
+	else \
+		sed -i 's/Go Template/$(PROJECT_NAME)/g' CLAUDE.md; \
+	fi
 	
 	@echo '${GREEN}Cleaning example files...${RESET}'
 	@rm -f internal/domain/entities/user*.go
