@@ -39,7 +39,7 @@ jobs:
       - name: Install dependencies
         run: |
           ${{ matrix.install_cmd }}
-          go install github.com/maykonlf/semver-cli/cmd/git-semver@latest
+          go install github.com/caarlos0/svu@latest
 
       - name: Run Template Instantiation Tests
         run: |
@@ -101,7 +101,7 @@ jobs:
           sudo chmod +x /usr/local/bin/yq
           
           # Install go tools
-          go install github.com/maykonlf/semver-cli/cmd/git-semver@latest
+          go install github.com/caarlos0/svu@latest
           go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.61.0
           
           # Install Python tools

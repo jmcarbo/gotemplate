@@ -121,7 +121,7 @@ check_dependencies() {
     
     # Check for optional but recommended tools
     local optional_deps=()
-    for cmd in yq git-semver git-cliff; do
+    for cmd in yq svu git-cliff; do
         if ! command -v "$cmd" &> /dev/null; then
             optional_deps+=("$cmd")
         fi

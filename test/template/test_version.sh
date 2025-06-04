@@ -17,9 +17,9 @@ setup_version_test() {
     run_in_test_project "git add ."
     run_in_test_project "git commit -m 'Initial commit'"
     
-    # Install git-semver if not present
-    if ! command -v git-semver &> /dev/null; then
-        log_warn "git-semver not installed, some tests will be skipped"
+    # Install svu if not present
+    if ! command -v svu &> /dev/null; then
+        log_warn "svu not installed, some tests will be skipped"
     fi
 }
 
@@ -59,9 +59,9 @@ test_conventional_commits() {
 test_version_calculation() {
     setup_version_test
     
-    # Skip if git-semver not available
-    if ! command -v git-semver &> /dev/null; then
-        log_warn "Skipping version calculation test (git-semver not installed)"
+    # Skip if svu not available
+    if ! command -v svu &> /dev/null; then
+        log_warn "Skipping version calculation test (svu not installed)"
         return 0
     fi
     
@@ -72,10 +72,10 @@ test_version_calculation() {
     run_in_test_project "echo 'fix' > fix.txt && git add fix.txt && git commit -m 'fix: bug fix'"
     
     # Check next version would be patch
-    local next_version=$(run_in_test_project "git-semver get release" 2>/dev/null || echo "")
+    local next_version=$(run_in_test_project "svu next" 2>/dev/null || echo "")
     if [[ -n "$next_version" ]]; then
-        echo "$next_version" | grep -q "0.0.1" || {
-            log_error "Next version after fix should be 0.0.1"
+        echo "$next_version" | grep -q "v0.0.1" || {
+            log_error "Next version after fix should be v0.0.1"
             return 1
         }
     fi
@@ -85,9 +85,9 @@ test_version_calculation() {
 test_make_release() {
     setup_version_test
     
-    # Skip if git-semver not available
-    if ! command -v git-semver &> /dev/null; then
-        log_warn "Skipping make release test (git-semver not installed)"
+    # Skip if svu not available
+    if ! command -v svu &> /dev/null; then
+        log_warn "Skipping make release test (svu not installed)"
         return 0
     fi
     
@@ -182,9 +182,9 @@ test_version_in_ci() {
 test_breaking_changes() {
     setup_version_test
     
-    # Skip if git-semver not available
-    if ! command -v git-semver &> /dev/null; then
-        log_warn "Skipping breaking changes test (git-semver not installed)"
+    # Skip if svu not available
+    if ! command -v svu &> /dev/null; then
+        log_warn "Skipping breaking changes test (svu not installed)"
         return 0
     fi
     
@@ -196,9 +196,9 @@ test_breaking_changes() {
     run_in_test_project "git commit -m 'feat!: breaking change'"
     
     # Next version should be major
-    local next_version=$(run_in_test_project "git-semver get release" 2>/dev/null || echo "")
+    local next_version=$(run_in_test_project "svu next" 2>/dev/null || echo "")
     if [[ -n "$next_version" ]]; then
-        echo "$next_version" | grep -q "2.0.0" || {
+        echo "$next_version" | grep -q "v2.0.0" || {
             log_error "Breaking change should bump major version"
             return 1
         }

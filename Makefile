@@ -157,51 +157,51 @@ version: ## Show current version
 
 version-next: ## Preview next version based on commits
 	@echo '${GREEN}Next version will be:${RESET}'
-	@if ! command -v git-semver &> /dev/null; then \
-		echo '${YELLOW}Installing git-semver...${RESET}'; \
-		go install github.com/maykonlf/semver-cli/cmd/git-semver@latest; \
+	@if ! command -v svu &> /dev/null; then \
+		echo '${YELLOW}Installing svu...${RESET}'; \
+		go install github.com/caarlos0/svu@latest; \
 	fi
-	@git-semver get release
+	@svu next
 
 release: ## Create a new release based on conventional commits
 	@echo '${GREEN}Creating release...${RESET}'
-	@if ! command -v git-semver &> /dev/null; then \
-		echo '${YELLOW}Installing git-semver...${RESET}'; \
-		go install github.com/maykonlf/semver-cli/cmd/git-semver@latest; \
+	@if ! command -v svu &> /dev/null; then \
+		echo '${YELLOW}Installing svu...${RESET}'; \
+		go install github.com/caarlos0/svu@latest; \
 	fi
-	@VERSION=$$(git-semver get release) && \
-	git tag -a "v$$VERSION" -m "Release v$$VERSION" && \
-	echo '${CYAN}Tagged version v'$$VERSION'${RESET}'
+	@VERSION=$$(svu next) && \
+	git tag -a "$$VERSION" -m "Release $$VERSION" && \
+	echo '${CYAN}Tagged version '$$VERSION'${RESET}'
 
 release-patch: ## Force patch release
 	@echo '${GREEN}Creating patch release...${RESET}'
-	@if ! command -v git-semver &> /dev/null; then \
-		echo '${YELLOW}Installing git-semver...${RESET}'; \
-		go install github.com/maykonlf/semver-cli/cmd/git-semver@latest; \
+	@if ! command -v svu &> /dev/null; then \
+		echo '${YELLOW}Installing svu...${RESET}'; \
+		go install github.com/caarlos0/svu@latest; \
 	fi
-	@VERSION=$$(git-semver get patch) && \
-	git tag -a "v$$VERSION" -m "Release v$$VERSION" && \
-	echo '${CYAN}Tagged version v'$$VERSION'${RESET}'
+	@VERSION=$$(svu patch) && \
+	git tag -a "$$VERSION" -m "Release $$VERSION" && \
+	echo '${CYAN}Tagged version '$$VERSION'${RESET}'
 
 release-minor: ## Force minor release
 	@echo '${GREEN}Creating minor release...${RESET}'
-	@if ! command -v git-semver &> /dev/null; then \
-		echo '${YELLOW}Installing git-semver...${RESET}'; \
-		go install github.com/maykonlf/semver-cli/cmd/git-semver@latest; \
+	@if ! command -v svu &> /dev/null; then \
+		echo '${YELLOW}Installing svu...${RESET}'; \
+		go install github.com/caarlos0/svu@latest; \
 	fi
-	@VERSION=$$(git-semver get minor) && \
-	git tag -a "v$$VERSION" -m "Release v$$VERSION" && \
-	echo '${CYAN}Tagged version v'$$VERSION'${RESET}'
+	@VERSION=$$(svu minor) && \
+	git tag -a "$$VERSION" -m "Release $$VERSION" && \
+	echo '${CYAN}Tagged version '$$VERSION'${RESET}'
 
 release-major: ## Force major release
 	@echo '${GREEN}Creating major release...${RESET}'
-	@if ! command -v git-semver &> /dev/null; then \
-		echo '${YELLOW}Installing git-semver...${RESET}'; \
-		go install github.com/maykonlf/semver-cli/cmd/git-semver@latest; \
+	@if ! command -v svu &> /dev/null; then \
+		echo '${YELLOW}Installing svu...${RESET}'; \
+		go install github.com/caarlos0/svu@latest; \
 	fi
-	@VERSION=$$(git-semver get major) && \
-	git tag -a "v$$VERSION" -m "Release v$$VERSION" && \
-	echo '${CYAN}Tagged version v'$$VERSION'${RESET}'
+	@VERSION=$$(svu major) && \
+	git tag -a "$$VERSION" -m "Release $$VERSION" && \
+	echo '${CYAN}Tagged version '$$VERSION'${RESET}'
 
 changelog: ## Generate changelog from commits
 	@echo '${GREEN}Generating changelog...${RESET}'
@@ -289,7 +289,7 @@ install-tools: ## Install development tools
 	@go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
 	@go install github.com/swaggo/swag/cmd/swag@latest
 	@go install github.com/vektra/mockery/v2@latest
-	@go install github.com/maykonlf/semver-cli/cmd/git-semver@latest
+	@go install github.com/caarlos0/svu@latest
 	@pip install --user commitizen || echo '${YELLOW}Please install Python/pip for commitizen${RESET}'
 	@echo '${CYAN}Tools installed successfully${RESET}'
 

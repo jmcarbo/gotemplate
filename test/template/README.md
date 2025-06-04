@@ -134,7 +134,7 @@ Required tools:
 
 Optional tools (some tests will skip if not present):
 - `yq` - YAML parsing
-- `git-semver` - Version calculation
+- `svu` - Semantic version calculation
 - `git-cliff` - Changelog generation
 - `golangci-lint` - Go linting
 
