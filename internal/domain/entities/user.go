@@ -45,11 +45,10 @@ func NewUser(id UserID, username, email string) (*User, error) {
 	if err := validateUsername(username); err != nil {
 		return nil, err
 	}
-	
+
 	if err := validateEmail(email); err != nil {
 		return nil, err
 	}
-	
 	now := time.Now().UTC()
 	return &User{
 		ID:        id,
@@ -93,3 +92,4 @@ func validateEmail(email string) error {
 	}
 	return nil
 }
+

@@ -12,10 +12,9 @@ import (
 )
 
 var (
-	version   = "dev"
-	commit    = "none"
-	date      = "unknown"
-	buildTime = "unknown"
+	version = "dev"
+	commit  = "none"
+	date    = "unknown"
 )
 
 func main() {
@@ -45,25 +44,26 @@ func main() {
 
 	if err := run(ctx, *configPath, *port); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		cancel()
 		os.Exit(1)
 	}
 }
 
 func run(ctx context.Context, configPath, port string) error {
 	_ = configPath // TODO: implement config loading
-	
+
 	fmt.Printf("Starting server on port %s...\n", port)
-	
+
 	// Wait for context cancellation
 	<-ctx.Done()
-	
+
 	// Graceful shutdown
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer shutdownCancel()
-	
+
 	// Simulate shutdown process
 	fmt.Println("Shutting down gracefully...")
-	
+
 	select {
 	case <-shutdownCtx.Done():
 		return fmt.Errorf("shutdown timeout exceeded")
@@ -72,3 +72,4 @@ func run(ctx context.Context, configPath, port string) error {
 		return nil
 	}
 }
+

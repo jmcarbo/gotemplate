@@ -3,7 +3,7 @@ package repositories
 
 import (
 	"context"
-	
+
 	"gotemplaterepo/internal/domain/entities"
 )
 
