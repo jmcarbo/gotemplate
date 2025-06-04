@@ -1,7 +1,7 @@
 # Go Clean Architecture Template 🏗️
 
 [![Template Tests](https://github.com/jmcarbo/gotemplate/actions/workflows/template-tests.yml/badge.svg)](https://github.com/jmcarbo/gotemplate/actions/workflows/template-tests.yml)
-[![Go Version](https://img.shields.io/badge/Go-1.24-blue.svg)](https://golang.org/doc/go1.24)
+[![Go Version](https://img.shields.io/badge/Go-1.23-blue.svg)](https://golang.org/doc/go1.23)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 A production-ready Go project template implementing Clean Architecture principles with SOLID design patterns, complete with testing, CI/CD, and project management tools.
@@ -131,7 +131,7 @@ make template-sync
 
 ## 📋 Requirements
 
-- Go 1.24 or higher
+- Go 1.23 or higher
 - Docker and Docker Compose
 - Make
 - Git

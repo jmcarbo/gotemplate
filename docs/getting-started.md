@@ -6,7 +6,7 @@ This guide will walk you through creating a new Go project from this template re
 
 Before starting, ensure you have the following installed:
 
-- Go 1.24 or higher
+- Go 1.23 or higher
 - Docker and Docker Compose
 - Make
 - Git

@@ -2,7 +2,7 @@
 
 BINARY_NAME=gotemplate
 DOCKER_IMAGE=gotemplate:latest
-GO_VERSION=1.24
+GO_VERSION=1.23
 GOBASE=$(shell pwd)
 GOBIN=$(GOBASE)/bin
 GOFILES=$(wildcard *.go)

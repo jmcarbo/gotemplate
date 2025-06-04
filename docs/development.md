@@ -6,7 +6,7 @@ This guide covers the development workflow, tools, and best practices for workin
 
 ### Required Tools
 
-1. **Go 1.24+** - The programming language
+1. **Go 1.23+** - The programming language
 2. **Docker & Docker Compose** - For running services locally
 3. **Make** - Build automation
 4. **Git** - Version control

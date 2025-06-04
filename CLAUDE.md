@@ -13,7 +13,7 @@ The project follows Clean Architecture with these layers:
 ## Development Workflow
 
 ### Prerequisites
-- Go 1.24 or higher
+- Go 1.23 or higher
 - Docker and Docker Compose
 - Make
 

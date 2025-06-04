@@ -1,5 +1,5 @@
 # Build stage
-FROM golang:1.24-alpine AS builder
+FROM golang:1.23-alpine AS builder
 
 RUN apk add --no-cache git ca-certificates tzdata
 
@@ -15,7 +15,7 @@ COPY . .
 # Build the application
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
     -ldflags="-w -s -X main.Version=$(git describe --tags --always --dirty) -X main.BuildTime=$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-    -o /app/bin/selektor ./cmd/api
+    -o /app/bin/gotemplate ./cmd/api
 
 # Final stage
 FROM scratch
@@ -23,7 +23,7 @@ FROM scratch
 # Copy from builder
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
-COPY --from=builder /app/bin/selektor /selektor
+COPY --from=builder /app/bin/gotemplate /gotemplate
 
 # Create non-root user
 COPY --from=builder /etc/passwd /etc/passwd
@@ -31,4 +31,4 @@ USER nobody
 
 EXPOSE 8080
 
-ENTRYPOINT ["/selektor"]
+ENTRYPOINT ["/gotemplate"]
