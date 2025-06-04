@@ -1,27 +1,32 @@
+// Package commands contains write operations that modify system state.
 package commands
 
 import (
 	"context"
 	"fmt"
 	
-	"github.com/jmca/selektor/internal/domain/entities"
-	"github.com/jmca/selektor/internal/domain/repositories"
+	"gotemplaterepo/internal/domain/entities"
+	"gotemplaterepo/internal/domain/repositories"
 )
 
+// CreateUserCommand represents the input for creating a new user.
 type CreateUserCommand struct {
 	Username string
 	Email    string
 }
 
+// CreateUserHandler handles user creation commands.
 type CreateUserHandler struct {
 	userRepo repositories.UserRepository
 	idGen    IDGenerator
 }
 
+// IDGenerator defines the interface for generating unique IDs.
 type IDGenerator interface {
 	Generate() string
 }
 
+// NewCreateUserHandler creates a new CreateUserHandler instance.
 func NewCreateUserHandler(userRepo repositories.UserRepository, idGen IDGenerator) *CreateUserHandler {
 	return &CreateUserHandler{
 		userRepo: userRepo,
@@ -29,6 +34,7 @@ func NewCreateUserHandler(userRepo repositories.UserRepository, idGen IDGenerato
 	}
 }
 
+// Handle executes the create user command.
 func (h *CreateUserHandler) Handle(ctx context.Context, cmd CreateUserCommand) (*entities.User, error) {
 	existingUser, err := h.userRepo.GetByEmail(ctx, cmd.Email)
 	if err == nil && existingUser != nil {

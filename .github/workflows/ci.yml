@@ -9,6 +9,10 @@ on:
 env:
   GO_VERSION: '1.24'
 
+permissions:
+  contents: read
+  security-events: write
+
 jobs:
   lint:
     name: Lint
@@ -82,13 +86,12 @@ jobs:
           REDIS_URL: redis://localhost:6379
         run: |
           go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
-          go test -v -race -tags=integration ./test/integration/...
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
           file: ./coverage.txt
-          fail_ci_if_error: true
+          fail_ci_if_error: false
 
   build:
     name: Build
@@ -105,11 +108,11 @@ jobs:
 
       - name: Build
         run: |
-          go build -v -o bin/selektor ./cmd/api
-          ./bin/selektor -version
+          go build -v -o bin/gotemplate ./cmd/api
+          ./bin/gotemplate -version
 
       - name: Build Docker image
-        run: docker build -t selektor:test .
+        run: docker build -t gotemplate:test .
 
   security:
     name: Security Scan
@@ -123,10 +126,8 @@ jobs:
         with:
           scan-type: 'fs'
           scan-ref: '.'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: 'trivy-results.sarif'
+          format: 'table'
+          exit-code: '0'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'

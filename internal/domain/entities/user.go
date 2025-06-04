@@ -1,3 +1,4 @@
+// Package entities contains the core business entities of the domain.
 package entities
 
 import (
@@ -5,16 +6,19 @@ import (
 	"time"
 )
 
+// Domain errors for user entity.
 var (
-	ErrInvalidUserID    = errors.New("invalid user ID")
-	ErrInvalidEmail     = errors.New("invalid email address")
-	ErrInvalidUsername  = errors.New("invalid username")
-	ErrUserNotFound     = errors.New("user not found")
+	ErrInvalidUserID     = errors.New("invalid user ID")
+	ErrInvalidEmail      = errors.New("invalid email address")
+	ErrInvalidUsername   = errors.New("invalid username")
+	ErrUserNotFound      = errors.New("user not found")
 	ErrUserAlreadyExists = errors.New("user already exists")
 )
 
+// UserID represents a unique identifier for a user.
 type UserID string
 
+// NewUserID creates a new UserID with validation.
 func NewUserID(id string) (UserID, error) {
 	if id == "" {
 		return "", ErrInvalidUserID
@@ -22,10 +26,12 @@ func NewUserID(id string) (UserID, error) {
 	return UserID(id), nil
 }
 
+// String returns the string representation of UserID.
 func (id UserID) String() string {
 	return string(id)
 }
 
+// User represents a user in the system.
 type User struct {
 	ID        UserID
 	Username  string
@@ -34,6 +40,7 @@ type User struct {
 	UpdatedAt time.Time
 }
 
+// NewUser creates a new User with validation.
 func NewUser(id UserID, username, email string) (*User, error) {
 	if err := validateUsername(username); err != nil {
 		return nil, err
@@ -53,6 +60,7 @@ func NewUser(id UserID, username, email string) (*User, error) {
 	}, nil
 }
 
+// UpdateEmail updates the user's email address.
 func (u *User) UpdateEmail(email string) error {
 	if err := validateEmail(email); err != nil {
 		return err
@@ -62,6 +70,7 @@ func (u *User) UpdateEmail(email string) error {
 	return nil
 }
 
+// UpdateUsername updates the user's username.
 func (u *User) UpdateUsername(username string) error {
 	if err := validateUsername(username); err != nil {
 		return err

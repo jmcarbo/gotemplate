@@ -1,11 +1,13 @@
+// Package repositories defines the repository interfaces for the domain.
 package repositories
 
 import (
 	"context"
 	
-	"github.com/jmca/selektor/internal/domain/entities"
+	"gotemplaterepo/internal/domain/entities"
 )
 
+// UserRepository defines the interface for user persistence.
 type UserRepository interface {
 	Create(ctx context.Context, user *entities.User) error
 	GetByID(ctx context.Context, id entities.UserID) (*entities.User, error)

@@ -1,3 +1,4 @@
+// Package main provides the entry point for the application.
 package main
 
 import (
@@ -26,7 +27,7 @@ func main() {
 	flag.Parse()
 
 	if *versionFlag {
-		fmt.Printf("Selektor %s\nCommit: %s\nBuilt: %s\n", version, commit, date)
+		fmt.Printf("gotemplate %s\nCommit: %s\nBuilt: %s\n", version, commit, date)
 		os.Exit(0)
 	}
 
@@ -49,17 +50,24 @@ func main() {
 }
 
 func run(ctx context.Context, configPath, port string) error {
-	fmt.Printf("Starting Selektor on port %s...\n", port)
+	_ = configPath // TODO: implement config loading
 	
+	fmt.Printf("Starting server on port %s...\n", port)
+	
+	// Wait for context cancellation
 	<-ctx.Done()
 	
+	// Graceful shutdown
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer shutdownCancel()
+	
+	// Simulate shutdown process
+	fmt.Println("Shutting down gracefully...")
 	
 	select {
 	case <-shutdownCtx.Done():
 		return fmt.Errorf("shutdown timeout exceeded")
-	default:
+	case <-time.After(100 * time.Millisecond): // Simulate quick shutdown
 		fmt.Println("Shutdown complete")
 		return nil
 	}
