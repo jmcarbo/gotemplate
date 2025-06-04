@@ -1,0 +1,13 @@
+{
+  "commitizen": {
+    "name": "cz_conventional_commits",
+    "version": "0.0.0",
+    "tag_format": "v$version",
+    "version_scheme": "semver",
+    "version_provider": "tag",
+    "update_changelog_on_bump": true,
+    "major_version_zero": true,
+    "changelog_incremental": true,
+    "changelog_start_rev": "v0.0.0"
+  }
+}

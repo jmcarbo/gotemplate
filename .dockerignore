@@ -1,0 +1,46 @@
+# Git files
+.git
+.gitignore
+
+# Documentation
+*.md
+docs/
+LICENSE
+
+# Test files
+*_test.go
+test/
+coverage.txt
+coverage.html
+
+# Development files
+.pre-commit-config.yaml
+.golangci.yml
+Makefile
+docker-compose*.yml
+Dockerfile
+
+# CI/CD
+.github/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+
+# Binaries
+bin/
+dist/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.log
+
+# Environment files
+.env*

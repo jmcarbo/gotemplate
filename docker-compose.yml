@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: selektor-api
+    ports:
+      - "8080:8080"
+    environment:
+      - APP_ENV=development
+      - APP_PORT=8080
+      - DATABASE_URL=postgres://selektor:selektor@postgres:5432/selektor?sslmode=disable
+      - REDIS_URL=redis://redis:6379
+      - LOG_LEVEL=debug
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - selektor-network
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: selektor-postgres
+    environment:
+      - POSTGRES_USER=selektor
+      - POSTGRES_PASSWORD=selektor
+      - POSTGRES_DB=selektor
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U selektor"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - selektor-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: selektor-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - selektor-network
+
+  migrate:
+    image: migrate/migrate
+    container_name: selektor-migrate
+    volumes:
+      - ./internal/infrastructure/database/migrations:/migrations
+    command: [
+      "-path", "/migrations",
+      "-database", "postgres://selektor:selektor@postgres:5432/selektor?sslmode=disable",
+      "up"
+    ]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - selektor-network
+
+volumes:
+  postgres-data:
+  redis-data:
+
+networks:
+  selektor-network:
+    driver: bridge

@@ -1,0 +1,77 @@
+# Template Sync Configuration
+# This file defines which files should be synchronized from the template repository
+# and how conflicts should be handled
+
+template:
+  repository: https://github.com/jmcarbo/gotemplate
+  branch: main
+
+# Files that should always be overwritten from template
+# These are typically configuration files that shouldn't be customized
+overwrite:
+  - .editorconfig
+  - .gitignore
+  - .dockerignore
+  - .golangci.yml
+  - .pre-commit-config.yaml
+  - .czrc
+  - cliff.toml
+  - .github/workflows/ci.yml
+  - .github/workflows/release.yml
+  - scripts/install-hooks.sh
+  - scripts/template-sync.sh
+
+# Files that should be merged carefully
+# The sync script will create .merge files for manual review
+merge:
+  - Makefile
+  - docker-compose.yml
+  - Dockerfile
+  - .env.example
+
+# Files that should be synced only if they don't exist locally
+create_if_missing:
+  - .claude/commands/*.md
+  - docs/architecture.md
+  - docs/project-structure.md
+  - docs/development.md
+  - docs/examples.md
+
+# Files to exclude from sync (never update these)
+exclude:
+  - README.md
+  - CLAUDE.md
+  - go.mod
+  - go.sum
+  - VERSION
+  - .env
+  - .env.*
+  - internal/**
+  - cmd/**
+  - pkg/**
+  - test/**
+  - build/**
+  - vendor/**
+
+# Track template version for compatibility
+version_file: .template-version
+
+# Backup settings
+backup:
+  enabled: true
+  directory: .template-backup
+
+# Hooks to run before/after sync
+hooks:
+  pre_sync:
+    - "make lint"
+  post_sync:
+    - "go mod tidy"
+    - "make install-tools"
+
+# Notification settings
+notifications:
+  # Show which files were updated
+  verbose: true
+  # Create a summary report
+  summary: true

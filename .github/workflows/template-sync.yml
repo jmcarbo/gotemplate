@@ -1,0 +1,171 @@
+name: Template Sync
+
+on:
+  # Manual trigger
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Perform a dry run (no changes)'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+      auto_merge:
+        description: 'Automatically create PR'
+        required: false
+        default: 'true'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+  
+  # Schedule - check weekly
+  schedule:
+    - cron: '0 0 * * 0'  # Every Sunday at midnight
+
+jobs:
+  check-updates:
+    runs-on: ubuntu-latest
+    outputs:
+      updates_available: ${{ steps.check.outputs.updates_available }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install yq
+        run: |
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Check for updates
+        id: check
+        run: |
+          if ./scripts/template-sync.sh --check; then
+            echo "updates_available=true" >> $GITHUB_OUTPUT
+          else
+            echo "updates_available=false" >> $GITHUB_OUTPUT
+          fi
+
+  sync-template:
+    needs: check-updates
+    if: needs.check-updates.outputs.updates_available == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Git
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+      - name: Install yq
+        run: |
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Run template sync
+        id: sync
+        run: |
+          if [[ "${{ github.event.inputs.dry_run }}" == "true" ]]; then
+            ./scripts/template-sync.sh --dry-run --verbose
+          else
+            ./scripts/template-sync.sh --force --verbose
+          fi
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if [[ -n $(git status -s) ]]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create sync branch
+        if: steps.changes.outputs.has_changes == 'true' && github.event.inputs.dry_run != 'true'
+        run: |
+          BRANCH_NAME="template-sync-$(date +%Y%m%d-%H%M%S)"
+          git checkout -b $BRANCH_NAME
+          echo "branch_name=$BRANCH_NAME" >> $GITHUB_ENV
+
+      - name: Commit changes
+        if: steps.changes.outputs.has_changes == 'true' && github.event.inputs.dry_run != 'true'
+        run: |
+          git add -A
+          git commit -m "chore: sync with template repository
+
+          This commit synchronizes files from the template repository.
+          
+          Files updated:
+          $(git diff --cached --name-only)
+          
+          Template version: $(cat .template-version)
+          
+          [skip ci]"
+
+      - name: Push changes
+        if: steps.changes.outputs.has_changes == 'true' && github.event.inputs.dry_run != 'true'
+        run: |
+          git push origin ${{ env.branch_name }}
+
+      - name: Create Pull Request
+        if: steps.changes.outputs.has_changes == 'true' && github.event.inputs.dry_run != 'true' && github.event.inputs.auto_merge != 'false'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ env.branch_name }}
+          title: 'chore: Sync with template repository'
+          body: |
+            ## Template Sync
+            
+            This PR synchronizes files from the template repository.
+            
+            ### Changes
+            - Updated configuration files and scripts from template
+            - Template version: `$(cat .template-version)`
+            
+            ### Merge Files
+            The following files require manual merge (if any):
+            ```
+            $(find . -name "*.merge" -type f)
+            ```
+            
+            ### Review Checklist
+            - [ ] Review all changed files
+            - [ ] Manually merge any `.merge` files
+            - [ ] Run tests to ensure nothing is broken
+            - [ ] Update CHANGELOG if needed
+            
+            ---
+            *This PR was automatically created by the template sync workflow.*
+          labels: |
+            template-sync
+            automated
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Template Sync Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [[ "${{ github.event.inputs.dry_run }}" == "true" ]]; then
+            echo "**Mode:** Dry Run (no changes made)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "**Mode:** Live Sync" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [[ "${{ steps.changes.outputs.has_changes }}" == "true" ]]; then
+            echo "✅ Changes detected and processed" >> $GITHUB_STEP_SUMMARY
+            if [[ "${{ github.event.inputs.dry_run }}" != "true" ]]; then
+              echo "📝 Pull request created on branch: ${{ env.branch_name }}" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "ℹ️ No changes detected" >> $GITHUB_STEP_SUMMARY
+          fi

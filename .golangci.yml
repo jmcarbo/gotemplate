@@ -1,0 +1,116 @@
+run:
+  timeout: 5m
+  tests: true
+  build-tags:
+    - integration
+  skip-dirs:
+    - vendor
+    - .git
+    - .github
+    - docs
+
+linters:
+  enable-all: true
+  disable:
+    - exhaustruct
+    - depguard
+    - musttag
+    - interfacebloat
+    - ireturn
+    - varnamelen
+    - gomnd
+    - mnd
+    - wrapcheck
+    - testpackage
+    - paralleltest
+    - tparallel
+    - thelper
+    - forbidigo
+    - gochecknoglobals
+    - execinquery
+    - tagalign
+    - err113
+    - perfsprint
+    - copyloopvar
+    - exportloopref
+    - intrange
+    - protogetter
+
+linters-settings:
+  govet:
+    enable-all: true
+    settings:
+      shadow:
+        strict: true
+  
+  gocyclo:
+    min-complexity: 15
+  
+  goconst:
+    min-len: 3
+    min-occurrences: 3
+  
+  misspell:
+    locale: US
+  
+  lll:
+    line-length: 120
+  
+  goimports:
+    local-prefixes: github.com/jmca/selektor
+  
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - performance
+      - style
+      - experimental
+    disabled-checks:
+      - dupImport
+  
+  funlen:
+    lines: 60
+    statements: 40
+  
+  godox:
+    keywords:
+      - TODO
+      - FIXME
+      - OPTIMIZE
+      - HACK
+  
+  wsl:
+    allow-cuddle-declarations: true
+  
+  nolintlint:
+    allow-unused: false
+    allow-no-explanation: []
+    require-explanation: true
+    require-specific: true
+
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - dupl
+        - gosec
+        - goconst
+        - funlen
+        - gocognit
+        - gocyclo
+        - errcheck
+        - goerr113
+    
+    - path: test/
+      linters:
+        - goerr113
+        - gosec
+    
+    - path: cmd/
+      linters:
+        - gochecknoglobals
+        - goerr113
+    
+    - linters:
+        - stylecheck
+      text: "ST1000:"
