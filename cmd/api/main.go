@@ -18,6 +18,10 @@ var (
 )
 
 func main() {
+	os.Exit(realMain())
+}
+
+func realMain() int {
 	var (
 		versionFlag = flag.Bool("version", false, "Show version information")
 		configPath  = flag.String("config", "", "Path to configuration file")
@@ -27,7 +31,7 @@ func main() {
 
 	if *versionFlag {
 		fmt.Printf("gotemplate %s\nCommit: %s\nBuilt: %s\n", version, commit, date)
-		os.Exit(0)
+		return 0
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -44,9 +48,10 @@ func main() {
 
 	if err := run(ctx, *configPath, *port); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		cancel()
-		os.Exit(1)
+		return 1
 	}
+
+	return 0
 }
 
 func run(ctx context.Context, configPath, port string) error {
@@ -72,4 +77,3 @@ func run(ctx context.Context, configPath, port string) error {
 		return nil
 	}
 }
-

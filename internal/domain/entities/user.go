@@ -92,4 +92,3 @@ func validateEmail(email string) error {
 	}
 	return nil
 }
-

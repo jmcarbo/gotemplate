@@ -4,7 +4,7 @@ package commands
 import (
 	"context"
 	"fmt"
-	
+
 	"gotemplaterepo/internal/domain/entities"
 	"gotemplaterepo/internal/domain/repositories"
 )
@@ -40,25 +40,25 @@ func (h *CreateUserHandler) Handle(ctx context.Context, cmd CreateUserCommand) (
 	if err == nil && existingUser != nil {
 		return nil, entities.ErrUserAlreadyExists
 	}
-	
+
 	existingUser, err = h.userRepo.GetByUsername(ctx, cmd.Username)
 	if err == nil && existingUser != nil {
 		return nil, entities.ErrUserAlreadyExists
 	}
-	
+
 	userID, err := entities.NewUserID(h.idGen.Generate())
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate user ID: %w", err)
 	}
-	
+
 	user, err := entities.NewUser(userID, cmd.Username, cmd.Email)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create user: %w", err)
 	}
-	
+
 	if err := h.userRepo.Create(ctx, user); err != nil {
 		return nil, fmt.Errorf("failed to save user: %w", err)
 	}
-	
+
 	return user, nil
 }

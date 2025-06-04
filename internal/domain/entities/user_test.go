@@ -3,7 +3,7 @@ package entities_test
 import (
 	"testing"
 	"time"
-	
+
 	"gotemplaterepo/internal/domain/entities"
 )
 
@@ -51,39 +51,39 @@ func TestNewUser(t *testing.T) {
 			wantErr:  entities.ErrInvalidEmail,
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			user, err := entities.NewUser(tt.id, tt.username, tt.email)
-			
+
 			if tt.wantErr != nil {
 				if err != tt.wantErr {
 					t.Errorf("NewUser() error = %v, wantErr %v", err, tt.wantErr)
 				}
 				return
 			}
-			
+
 			if err != nil {
 				t.Errorf("NewUser() unexpected error = %v", err)
 				return
 			}
-			
+
 			if user.ID != tt.id {
 				t.Errorf("NewUser() ID = %v, want %v", user.ID, tt.id)
 			}
-			
+
 			if user.Username != tt.username {
 				t.Errorf("NewUser() Username = %v, want %v", user.Username, tt.username)
 			}
-			
+
 			if user.Email != tt.email {
 				t.Errorf("NewUser() Email = %v, want %v", user.Email, tt.email)
 			}
-			
+
 			if user.CreatedAt.IsZero() {
 				t.Error("NewUser() CreatedAt should not be zero")
 			}
-			
+
 			if user.UpdatedAt.IsZero() {
 				t.Error("NewUser() UpdatedAt should not be zero")
 			}
@@ -94,9 +94,9 @@ func TestNewUser(t *testing.T) {
 func TestUser_UpdateEmail(t *testing.T) {
 	user, _ := entities.NewUser("user123", "johndoe", "john@example.com")
 	originalUpdatedAt := user.UpdatedAt
-	
+
 	time.Sleep(10 * time.Millisecond)
-	
+
 	tests := []struct {
 		name    string
 		email   string
@@ -118,27 +118,27 @@ func TestUser_UpdateEmail(t *testing.T) {
 			wantErr: entities.ErrInvalidEmail,
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := user.UpdateEmail(tt.email)
-			
+
 			if tt.wantErr != nil {
 				if err != tt.wantErr {
 					t.Errorf("UpdateEmail() error = %v, wantErr %v", err, tt.wantErr)
 				}
 				return
 			}
-			
+
 			if err != nil {
 				t.Errorf("UpdateEmail() unexpected error = %v", err)
 				return
 			}
-			
+
 			if user.Email != tt.email {
 				t.Errorf("UpdateEmail() Email = %v, want %v", user.Email, tt.email)
 			}
-			
+
 			if !user.UpdatedAt.After(originalUpdatedAt) {
 				t.Error("UpdateEmail() should update UpdatedAt")
 			}
