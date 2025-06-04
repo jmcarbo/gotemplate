@@ -23,4 +23,3 @@ func NewExample(userID entities.UserID, value string) (*Example, error) {
 		Value:  value,
 	}, nil
 }
-
