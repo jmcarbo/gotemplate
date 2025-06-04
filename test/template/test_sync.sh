@@ -19,7 +19,7 @@ setup_sync_test() {
     run_in_test_project "echo 'file://$TEST_REPO_DIR' > .template-repo"
     
     # Update sync config to use local repo
-    run_in_test_project "sed -i.bak 's|https://github.com/yourusername/gotemplaterepo|file://$TEST_REPO_DIR|g' .template-sync.yml"
+    run_in_test_project "sed -i.bak 's|https://github.com/jmcarbo/gotemplate|file://$TEST_REPO_DIR|g' .template-sync.yml"
 }
 
 # Test: Check for updates

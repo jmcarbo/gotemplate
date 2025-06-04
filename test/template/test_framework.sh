@@ -15,7 +15,7 @@ NC='\033[0m' # No Color
 export TEST_DIR="${TEST_DIR:-/tmp/gotemplate-tests-$$}"
 export TEST_REPO_DIR="${TEST_DIR}/template-repo"
 export TEST_PROJECT_DIR="${TEST_DIR}/test-project"
-export TEMPLATE_URL="${TEMPLATE_URL:-https://github.com/yourusername/gotemplaterepo}"
+export TEMPLATE_URL="${TEMPLATE_URL:-https://github.com/jmcarbo/gotemplate}"
 
 # Logging functions
 log_info() {
