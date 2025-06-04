@@ -3,23 +3,24 @@ package valueobjects
 
 import (
 	"errors"
-
-	"gotemplaterepo/internal/domain/entities"
 )
 
 // Example value object for testing import updates
 type Example struct {
-	UserID entities.UserID
-	Value  string
+	ID    string
+	Value string
 }
 
 // NewExample creates a new Example value object
-func NewExample(userID entities.UserID, value string) (*Example, error) {
+func NewExample(id string, value string) (*Example, error) {
+	if id == "" {
+		return nil, errors.New("id cannot be empty")
+	}
 	if value == "" {
 		return nil, errors.New("value cannot be empty")
 	}
 	return &Example{
-		UserID: userID,
-		Value:  value,
+		ID:    id,
+		Value: value,
 	}, nil
 }
