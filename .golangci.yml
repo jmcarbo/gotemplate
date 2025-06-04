@@ -4,12 +4,6 @@ run:
   tests: true
   build-tags:
     - integration
-  exclude-dirs:
-    - vendor
-    - .git
-    - .github
-    - docs
-    - test/template
 
 linters:
   enable:
@@ -66,6 +60,12 @@ linters-settings:
       - name: error-naming
 
 issues:
+  exclude-dirs:
+    - vendor
+    - .git
+    - .github
+    - docs
+    - test/template
   exclude-rules:
     - path: _test\.go
       linters:
