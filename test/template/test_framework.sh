@@ -101,6 +101,12 @@ assert_command_fails() {
 setup_test_env() {
     log_info "Setting up test environment in $TEST_DIR"
     
+    # Configure git if not already configured
+    if ! git config --global user.email > /dev/null 2>&1; then
+        git config --global user.email "test@example.com"
+        git config --global user.name "Test User"
+    fi
+    
     # Clean up any existing test directory
     cleanup_test_env
     
