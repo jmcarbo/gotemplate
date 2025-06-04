@@ -1,6 +1,7 @@
 # Go Clean Architecture Template 🏗️
 
-[![Template Tests](https://github.com/jmcarbo/gotemplate/actions/workflows/template-tests.yml/badge.svg)](https://github.com/jmcarbo/gotemplate/actions/workflows/template-tests.yml)
+[![CI](https://github.com/jmcarbo/gotemplate/actions/workflows/ci.yml/badge.svg)](https://github.com/jmcarbo/gotemplate/actions/workflows/ci.yml)
+[![Tests](https://github.com/jmcarbo/gotemplate/actions/workflows/test.yml/badge.svg)](https://github.com/jmcarbo/gotemplate/actions/workflows/test.yml)
 [![Go Version](https://img.shields.io/badge/Go-1.23-blue.svg)](https://golang.org/doc/go1.23)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
@@ -101,17 +102,37 @@ make docker-run       # Run in Docker
 
 ## 🧪 Testing
 
-The template includes comprehensive tests:
+### For Template Users
+
+Your project includes standard Go testing:
 
 ```bash
-# Run all template tests
-make test-template
+# Run all tests
+make test
 
-# Run specific test suites
-make test-instantiation  # Test project creation
-make test-sync          # Test template updates
-make test-build-dev     # Test build commands
-make test-version       # Test versioning
+# Run with coverage
+make test-coverage
+
+# Run benchmarks
+make benchmark
+```
+
+### For Template Development
+
+The template itself is thoroughly tested:
+
+```bash
+# Run local template test
+./test/test_template.sh
+
+# GitHub Actions runs comprehensive tests:
+# - Code quality (lint, format, build)
+# - Template instantiation (multiple scenarios)
+# - Development workflow
+# - Docker builds
+# - Version management
+# - Pre-commit hooks
+# - Full integration tests
 ```
 
 ## 🔄 Keeping Your Project Updated

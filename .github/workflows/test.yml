@@ -1,0 +1,355 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+env:
+  GO_VERSION: '1.23'
+
+jobs:
+  # Basic code quality checks
+  code-quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      
+      - name: Run CI checks
+        run: make ci
+
+  # Test template instantiation with different configurations
+  template-instantiation:
+    name: Template Instantiation
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        test:
+          - name: "Basic Project"
+            project: "myapp"
+            module: "github.com/test/myapp"
+          - name: "Hyphenated Name"
+            project: "my-awesome-app"
+            module: "github.com/test/my-awesome-app"
+          - name: "Complex Path"
+            project: "api"
+            module: "github.com/company/backend/api"
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      
+      - name: Configure git
+        run: |
+          git config --global user.email "test@example.com"
+          git config --global user.name "Test User"
+      
+      - name: Test ${{ matrix.test.name }} Setup
+        run: |
+          # Create a temporary directory
+          TEMP_DIR=$(mktemp -d)
+          echo "Working in $TEMP_DIR"
+          
+          # Copy template
+          cp -r . "$TEMP_DIR/template"
+          cd "$TEMP_DIR/template"
+          
+          # Run setup
+          make setup-project PROJECT_NAME=${{ matrix.test.project }} MODULE_PATH=${{ matrix.test.module }}
+          
+          # Verify module name
+          grep -q "module ${{ matrix.test.module }}" go.mod || (echo "Module name not updated" && exit 1)
+          
+          # Verify binary name
+          grep -q "BINARY_NAME=${{ matrix.test.project }}" Makefile || (echo "Binary name not updated" && exit 1)
+          
+          # Verify imports were updated
+          if find . -name "*.go" -type f -exec grep -l "gotemplaterepo" {} \; | grep -v ".git"; then
+            echo "Found unchanged imports"
+            exit 1
+          fi
+          
+          # Test build
+          make build
+          test -f "bin/${{ matrix.test.project }}" || (echo "Binary not created" && exit 1)
+          
+          # Test the binary
+          ./bin/${{ matrix.test.project }} -version
+          
+          # Cleanup
+          cd /
+          rm -rf "$TEMP_DIR"
+
+  # Test development workflow
+  development-workflow:
+    name: Development Workflow
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      
+      - name: Configure git
+        run: |
+          git config --global user.email "test@example.com"
+          git config --global user.name "Test User"
+      
+      - name: Test Development Commands
+        run: |
+          # Test various make targets
+          make deps
+          make fmt
+          make lint
+          make test
+          make build
+          
+          # Verify binary works
+          ./bin/gotemplate -version
+
+  # Test Docker build and run
+  docker-test:
+    name: Docker Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Build Docker image
+        run: docker build -t gotemplate:test .
+      
+      - name: Test Docker image
+        run: |
+          # Test version flag
+          docker run --rm gotemplate:test -version
+          
+          # Test that container can start and stop gracefully
+          docker run -d --name test-container gotemplate:test
+          sleep 2
+          docker stop test-container
+          docker rm test-container
+
+  # Test template sync functionality
+  template-sync:
+    name: Template Sync
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      
+      - name: Configure git
+        run: |
+          git config --global user.email "test@example.com"
+          git config --global user.name "Test User"
+      
+      - name: Test Template Sync
+        run: |
+          # Create a test project
+          TEMP_DIR=$(mktemp -d)
+          cp -r . "$TEMP_DIR/template"
+          cd "$TEMP_DIR/template"
+          
+          # Initialize as a git repo
+          rm -rf .git
+          git init
+          git add .
+          git commit -m "Initial commit"
+          
+          # Setup project
+          make setup-project PROJECT_NAME=testapp MODULE_PATH=github.com/test/testapp
+          
+          # Initialize project as git repo
+          git add .
+          git commit -m "Setup project"
+          
+          # Test sync script exists and is executable
+          test -x scripts/template-sync.sh || (echo "Sync script not executable" && exit 1)
+          
+          # Test dry run (should not fail even if no updates)
+          ./scripts/template-sync.sh --dry-run || true
+          
+          # Cleanup
+          cd /
+          rm -rf "$TEMP_DIR"
+
+  # Test version management
+  version-management:
+    name: Version Management
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      
+      - name: Install tools
+        run: |
+          go install github.com/caarlos0/svu@latest
+      
+      - name: Configure git
+        run: |
+          git config --global user.email "test@example.com"
+          git config --global user.name "Test User"
+      
+      - name: Test Version Commands
+        run: |
+          # Test version display
+          make version
+          
+          # Test version preview
+          make version-next || echo "No tags yet, that's OK"
+
+  # Test pre-commit hooks
+  pre-commit-test:
+    name: Pre-commit Hooks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      
+      - name: Configure git
+        run: |
+          git config --global user.email "test@example.com"
+          git config --global user.name "Test User"
+      
+      - name: Test Hook Installation
+        run: |
+          # Install pre-commit
+          pip install pre-commit commitizen
+          
+          # Test hook installation script
+          ./scripts/install-hooks.sh
+          
+          # Verify hooks are installed
+          test -f .git/hooks/pre-commit || (echo "Pre-commit hook not installed" && exit 1)
+          test -f .git/hooks/commit-msg || (echo "Commit-msg hook not installed" && exit 1)
+
+  # Integration test - full project creation and development
+  integration:
+    name: Integration Test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      
+      - name: Configure git
+        run: |
+          git config --global user.email "test@example.com"
+          git config --global user.name "Test User"
+      
+      - name: Full Integration Test
+        run: |
+          # Create a complete project
+          TEMP_DIR=$(mktemp -d)
+          cp -r . "$TEMP_DIR/template"
+          cd "$TEMP_DIR/template"
+          
+          # Setup project
+          make setup-project PROJECT_NAME=fulltest MODULE_PATH=github.com/test/fulltest
+          
+          # Initialize git
+          git init
+          git add .
+          git commit -m "Initial commit"
+          
+          # Run full development cycle
+          make install-tools || echo "Some tools might not install in CI"
+          make deps
+          make fmt
+          make lint
+          make test
+          make build
+          
+          # Test the application
+          ./bin/fulltest -version
+          
+          # Test Docker build
+          docker build -t fulltest:latest .
+          
+          # Create a simple API endpoint
+          cat > internal/adapters/http/health.go << 'EOF'
+          package http
+          
+          import "net/http"
+          
+          func HealthHandler(w http.ResponseWriter, r *http.Request) {
+              w.WriteHeader(http.StatusOK)
+              w.Write([]byte("OK"))
+          }
+          EOF
+          
+          # Verify it still builds
+          make build
+          
+          # Cleanup
+          cd /
+          rm -rf "$TEMP_DIR"
+
+  # Summary job to ensure all tests pass
+  test-summary:
+    name: Test Summary
+    runs-on: ubuntu-latest
+    needs: 
+      - code-quality
+      - template-instantiation
+      - development-workflow
+      - docker-test
+      - template-sync
+      - version-management
+      - pre-commit-test
+      - integration
+    if: always()
+    
+    steps:
+      - name: Check Results
+        run: |
+          if [[ "${{ needs.code-quality.result }}" != "success" ]] ||
+             [[ "${{ needs.template-instantiation.result }}" != "success" ]] ||
+             [[ "${{ needs.development-workflow.result }}" != "success" ]] ||
+             [[ "${{ needs.docker-test.result }}" != "success" ]] ||
+             [[ "${{ needs.template-sync.result }}" != "success" ]] ||
+             [[ "${{ needs.version-management.result }}" != "success" ]] ||
+             [[ "${{ needs.pre-commit-test.result }}" != "success" ]] ||
+             [[ "${{ needs.integration.result }}" != "success" ]]; then
+            echo "❌ Some tests failed"
+            echo "Code Quality: ${{ needs.code-quality.result }}"
+            echo "Template Instantiation: ${{ needs.template-instantiation.result }}"
+            echo "Development Workflow: ${{ needs.development-workflow.result }}"
+            echo "Docker: ${{ needs.docker-test.result }}"
+            echo "Template Sync: ${{ needs.template-sync.result }}"
+            echo "Version Management: ${{ needs.version-management.result }}"
+            echo "Pre-commit: ${{ needs.pre-commit-test.result }}"
+            echo "Integration: ${{ needs.integration.result }}"
+            exit 1
+          fi
+          
+          echo "✅ All tests passed!"

@@ -311,29 +311,9 @@ install-tools: ## Install development tools
 	@echo '${CYAN}Tools installed successfully${RESET}'
 
 ## Template Tests:
-test-template: ## Run template functionality tests
-	@echo '${GREEN}Running template tests...${RESET}'
-	@./test/template/run_all_tests.sh
-
-test-template-verbose: ## Run template tests with verbose output
-	@echo '${GREEN}Running template tests (verbose)...${RESET}'
-	@./test/template/run_all_tests.sh --verbose
-
-test-instantiation: ## Test template instantiation
-	@echo '${GREEN}Testing template instantiation...${RESET}'
-	@./test/template/test_instantiation.sh
-
-test-sync: ## Test template sync functionality
-	@echo '${GREEN}Testing template sync...${RESET}'
-	@./test/template/test_sync.sh
-
-test-build-dev: ## Test build and development commands
-	@echo '${GREEN}Testing build and dev commands...${RESET}'
-	@./test/template/test_build_dev.sh
-
-test-version: ## Test version management
-	@echo '${GREEN}Testing version management...${RESET}'
-	@./test/template/test_version.sh
+test-template: ## Run local template test
+	@echo '${GREEN}Running template test...${RESET}'
+	@./test/test_template.sh
 
 ## Help:
 help: ## Show this help
