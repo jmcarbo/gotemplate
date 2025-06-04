@@ -3,7 +3,7 @@ package valueobjects
 
 import (
 	"errors"
-	
+
 	"gotemplaterepo/internal/domain/entities"
 )
 
@@ -23,3 +23,4 @@ func NewExample(userID entities.UserID, value string) (*Example, error) {
 		Value:  value,
 	}, nil
 }
+
