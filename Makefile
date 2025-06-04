@@ -267,8 +267,9 @@ setup-project: ## Setup project from template (usage: make setup-project PROJECT
 	fi
 	
 	@echo '${GREEN}Cleaning example files...${RESET}'
-	@rm -f internal/domain/entities/user*.go
-	@rm -f internal/usecases/commands/create_user*.go
+	@rm -f internal/domain/entities/user.go
+	@rm -f internal/domain/entities/user_test.go
+	@rm -f internal/usecases/commands/create_user.go
 	@rm -f internal/domain/repositories/user_repository.go
 	
 	@echo '${GREEN}Running go mod tidy...${RESET}'
