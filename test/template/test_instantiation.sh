@@ -15,9 +15,9 @@ test_basic_setup() {
     # Check go.mod was updated
     assert_file_contains "$TEST_PROJECT_DIR/go.mod" "module github.com/testuser/myapp" "go.mod should have new module path"
     
-    # Check imports were updated
-    if [[ -f "$TEST_PROJECT_DIR/cmd/api/main.go" ]]; then
-        assert_file_contains "$TEST_PROJECT_DIR/cmd/api/main.go" "github.com/testuser/myapp" "Imports should be updated"
+    # Check imports were updated in files that remain
+    if [[ -f "$TEST_PROJECT_DIR/internal/domain/valueobjects/example.go" ]]; then
+        assert_file_contains "$TEST_PROJECT_DIR/internal/domain/valueobjects/example.go" "github.com/testuser/myapp" "Imports should be updated"
     fi
     
     # Check Makefile was updated
