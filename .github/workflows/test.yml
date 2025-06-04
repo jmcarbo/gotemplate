@@ -298,8 +298,12 @@ jobs:
           # Test the application
           ./bin/fulltest -version
           
-          # Test Docker build
-          docker build -t fulltest:latest .
+          # Test Docker build (skip on macOS)
+          if [[ "$RUNNER_OS" != "macOS" ]]; then
+            docker build -t fulltest:latest .
+          else
+            echo "Skipping Docker test on macOS"
+          fi
           
           # Create a simple API endpoint
           cat > internal/adapters/http/health.go << 'EOF'
