@@ -267,14 +267,9 @@ setup-project: ## Setup project from template (usage: make setup-project PROJECT
 	fi
 	
 	@echo '${GREEN}Cleaning example files...${RESET}'
-	@echo 'Working directory: ' && pwd
-	@echo 'Checking if files exist before removal:'
-	@ls -la internal/domain/entities/user*.go 2>/dev/null || echo 'No user files found'
 	@rm -rf internal/domain/entities/user.go internal/domain/entities/user_test.go || true
 	@rm -rf internal/usecases/commands/create_user.go || true
 	@rm -rf internal/domain/repositories/user_repository.go || true
-	@echo 'Checking after removal:'
-	@ls -la internal/domain/entities/ 2>/dev/null || echo 'Directory does not exist'
 	
 	@echo '${GREEN}Running go mod tidy...${RESET}'
 	@go mod tidy

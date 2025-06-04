@@ -28,13 +28,15 @@ test_basic_setup() {
     assert_file_contains "$TEST_PROJECT_DIR/docker-compose.yml" "myapp" "Docker compose should reference new project name"
     
     # Check example files were removed
-    log_info "Checking if example files were removed from $TEST_PROJECT_DIR"
+    # Note: We use ! -f instead of assert_command_fails for clarity
     if [[ -f "$TEST_PROJECT_DIR/internal/domain/entities/user.go" ]]; then
-        log_warn "user.go still exists, listing directory contents:"
-        ls -la "$TEST_PROJECT_DIR/internal/domain/entities/" || true
+        log_error "Example user.go was not removed"
+        return 1
     fi
-    assert_command_fails "test -f $TEST_PROJECT_DIR/internal/domain/entities/user.go" "Example user entity should be removed"
-    assert_command_fails "test -f $TEST_PROJECT_DIR/internal/domain/entities/user_test.go" "Example user test should be removed"
+    if [[ -f "$TEST_PROJECT_DIR/internal/domain/entities/user_test.go" ]]; then
+        log_error "Example user_test.go was not removed"
+        return 1
+    fi
     
     # Check template tracking files
     assert_file_exists "$TEST_PROJECT_DIR/.template-version" "Template version file should exist"
