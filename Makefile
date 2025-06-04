@@ -99,7 +99,7 @@ dev: ## Run with hot reload (requires air)
 	@echo '${GREEN}Starting development server...${RESET}'
 	@if ! command -v air &> /dev/null; then \
 		echo '${YELLOW}Installing air...${RESET}'; \
-		go install github.com/cosmtrek/air@latest; \
+		go install github.com/air-verse/air@latest; \
 	fi
 	@air
 
@@ -124,7 +124,11 @@ migrate-create: ## Create a new migration (usage: make migrate-create name=migra
 fmt: ## Format code
 	@echo '${GREEN}Formatting code...${RESET}'
 	@go fmt ./...
-	@gofumpt -l -w .
+	@if command -v gofumpt &> /dev/null; then \
+		gofumpt -l -w .; \
+	else \
+		echo '${YELLOW}gofumpt not installed, skipping extra formatting${RESET}'; \
+	fi
 
 vet: ## Run go vet
 	@echo '${GREEN}Running go vet...${RESET}'
@@ -300,7 +304,7 @@ setup-project: ## Setup project from template (usage: make setup-project PROJECT
 install-tools: ## Install development tools
 	@echo '${GREEN}Installing development tools...${RESET}'
 	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@$(GOLINT_VERSION)
-	@go install github.com/cosmtrek/air@latest
+	@go install github.com/air-verse/air@latest
 	@go install mvdan.cc/gofumpt@latest
 	@go install github.com/securego/gosec/v2/cmd/gosec@latest
 	@go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest

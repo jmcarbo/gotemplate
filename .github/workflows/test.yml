@@ -107,6 +107,11 @@ jobs:
           git config --global user.email "test@example.com"
           git config --global user.name "Test User"
       
+      - name: Install basic tools
+        run: |
+          # Install gofumpt for formatting
+          go install mvdan.cc/gofumpt@latest
+          
       - name: Test Development Commands
         run: |
           # Test various make targets
@@ -282,7 +287,8 @@ jobs:
           git commit -m "Initial commit"
           
           # Run full development cycle
-          make install-tools || echo "Some tools might not install in CI"
+          # Skip install-tools as it may have version conflicts
+          go install mvdan.cc/gofumpt@latest || true
           make deps
           make fmt
           make lint
