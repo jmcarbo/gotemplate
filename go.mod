@@ -1,3 +1,3 @@
-module github.com/jmca/selektor
+module gotemplaterepo
 
 go 1.24.3

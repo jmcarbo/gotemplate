@@ -1,4 +1,4 @@
-# Selektor Project Guidelines
+# Go Template Project Guidelines
 
 This is a Go project following SOLID principles and Clean Architecture. The codebase is structured to maintain clear separation of concerns and dependency inversion.
 

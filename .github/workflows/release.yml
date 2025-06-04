@@ -55,7 +55,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/selektor:latest
-            ${{ secrets.DOCKER_USERNAME }}/selektor:${{ github.ref_name }}
+            ${{ secrets.DOCKER_USERNAME }}/gotemplate:latest
+            ${{ secrets.DOCKER_USERNAME }}/gotemplate:${{ github.ref_name }}
             ghcr.io/${{ github.repository }}:latest
             ghcr.io/${{ github.repository }}:${{ github.ref_name }}

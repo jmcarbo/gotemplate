@@ -5,13 +5,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: selektor-api
+    container_name: gotemplate-api
     ports:
       - "8080:8080"
     environment:
       - APP_ENV=development
       - APP_PORT=8080
-      - DATABASE_URL=postgres://selektor:selektor@postgres:5432/selektor?sslmode=disable
+      - DATABASE_URL=postgres://gotemplate:gotemplate@postgres:5432/gotemplate?sslmode=disable
       - REDIS_URL=redis://redis:6379
       - LOG_LEVEL=debug
     depends_on:
@@ -20,31 +20,31 @@ services:
       redis:
         condition: service_healthy
     networks:
-      - selektor-network
+      - gotemplate-network
     restart: unless-stopped
 
   postgres:
     image: postgres:16-alpine
-    container_name: selektor-postgres
+    container_name: gotemplate-postgres
     environment:
-      - POSTGRES_USER=selektor
-      - POSTGRES_PASSWORD=selektor
-      - POSTGRES_DB=selektor
+      - POSTGRES_USER=gotemplate
+      - POSTGRES_PASSWORD=gotemplate
+      - POSTGRES_DB=gotemplate
     ports:
       - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U selektor"]
+      test: ["CMD-SHELL", "pg_isready -U gotemplate"]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
-      - selektor-network
+      - gotemplate-network
 
   redis:
     image: redis:7-alpine
-    container_name: selektor-redis
+    container_name: gotemplate-redis
     ports:
       - "6379:6379"
     volumes:
@@ -55,28 +55,28 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - selektor-network
+      - gotemplate-network
 
   migrate:
     image: migrate/migrate
-    container_name: selektor-migrate
+    container_name: gotemplate-migrate
     volumes:
       - ./internal/infrastructure/database/migrations:/migrations
     command: [
       "-path", "/migrations",
-      "-database", "postgres://selektor:selektor@postgres:5432/selektor?sslmode=disable",
+      "-database", "postgres://gotemplate:gotemplate@postgres:5432/gotemplate?sslmode=disable",
       "up"
     ]
     depends_on:
       postgres:
         condition: service_healthy
     networks:
-      - selektor-network
+      - gotemplate-network
 
 volumes:
   postgres-data:
   redis-data:
 
 networks:
-  selektor-network:
+  gotemplate-network:
     driver: bridge

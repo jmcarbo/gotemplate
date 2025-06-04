@@ -1,7 +1,7 @@
 .PHONY: all build test lint clean run docker-build docker-run help
 
-BINARY_NAME=selektor
-DOCKER_IMAGE=selektor:latest
+BINARY_NAME=gotemplate
+DOCKER_IMAGE=gotemplate:latest
 GO_VERSION=1.24
 GOBASE=$(shell pwd)
 GOBIN=$(GOBASE)/bin
@@ -240,14 +240,14 @@ setup-project: ## Setup project from template (usage: make setup-project PROJECT
 	@find . -type f -name "*.go" -exec sed -i '' 's|gotemplaterepo|$(MODULE_PATH)|g' {} +
 	
 	@echo '${GREEN}Updating Makefile...${RESET}'
-	@sed -i '' 's/BINARY_NAME=selektor/BINARY_NAME=$(PROJECT_NAME)/g' Makefile
-	@sed -i '' 's/DOCKER_IMAGE=selektor/DOCKER_IMAGE=$(PROJECT_NAME)/g' Makefile
+	@sed -i '' 's/BINARY_NAME=gotemplate/BINARY_NAME=$(PROJECT_NAME)/g' Makefile
+	@sed -i '' 's/DOCKER_IMAGE=gotemplate/DOCKER_IMAGE=$(PROJECT_NAME)/g' Makefile
 	
 	@echo '${GREEN}Updating docker-compose.yml...${RESET}'
-	@sed -i '' 's/selektor/$(PROJECT_NAME)/g' docker-compose.yml
+	@sed -i '' 's/gotemplate/$(PROJECT_NAME)/g' docker-compose.yml
 	
 	@echo '${GREEN}Updating CLAUDE.md...${RESET}'
-	@sed -i '' 's/Selektor/$(PROJECT_NAME)/g' CLAUDE.md
+	@sed -i '' 's/Go Template/$(PROJECT_NAME)/g' CLAUDE.md
 	
 	@echo '${GREEN}Cleaning example files...${RESET}'
 	@rm -f internal/domain/entities/user*.go

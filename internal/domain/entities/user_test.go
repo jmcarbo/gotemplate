@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 	
-	"github.com/jmca/selektor/internal/domain/entities"
+	"gotemplaterepo/internal/domain/entities"
 )
 
 func TestNewUser(t *testing.T) {
