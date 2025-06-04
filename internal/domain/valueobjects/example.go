@@ -12,7 +12,7 @@ type Example struct {
 }
 
 // NewExample creates a new Example value object
-func NewExample(id string, value string) (*Example, error) {
+func NewExample(id, value string) (*Example, error) {
 	if id == "" {
 		return nil, errors.New("id cannot be empty")
 	}
